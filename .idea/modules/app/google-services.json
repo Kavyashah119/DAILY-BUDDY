@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "218163998282",
+    "firebase_url": "https://daily-buddy-4c017.firebaseio.com",
+    "project_id": "daily-buddy-4c017",
+    "storage_bucket": "daily-buddy-4c017.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:218163998282:android:b7d0dae1a54139248b40b3",
+        "android_client_info": {
+          "package_name": "com.kavya.dailybuddy"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "218163998282-dl0uhchp48q6hdmfd5nfqekpfjklf116.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.kavya.dailybuddy",
+            "certificate_hash": "f37fb353546f5d7096b91ce8a7e80f2eff40036e"
+          }
+        },
+        {
+          "client_id": "218163998282-ks2gnpsflqdieq2rbenr9n4vgd2iarh6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDI5j5uwk2u7E-T2l6xA3eLjXONYgTIzpQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "218163998282-ks2gnpsflqdieq2rbenr9n4vgd2iarh6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

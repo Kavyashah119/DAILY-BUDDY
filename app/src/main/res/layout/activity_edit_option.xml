@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".EditOption"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <EditText
+            android:id="@+id/title_edt"
+            android:layout_marginTop="15dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="40sp"
+            android:enabled="false"
+            android:textColor="#f2c"/>
+
+        <EditText
+            android:id="@+id/des_edt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:textSize="30sp"
+            android:layout_below="@id/title_edt"
+            android:focusable="true"/>
+
+        <EditText
+            android:id="@+id/pick_a_date"
+            android:layout_width="282dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="75dp"
+            android:layout_marginTop="30dp"
+            android:layout_marginBottom="15dp"
+            android:layout_below="@id/des_edt"
+            android:hint="Pick a date"
+            android:textSize="25sp"
+            android:clickable="true"
+            android:focusable="false"/>
+
+        <ImageView
+            android:id="@+id/calendar"
+            android:layout_width="97dp"
+            android:layout_height="91dp"
+            android:layout_marginStart="15dp"
+            android:layout_marginTop="180dp"
+            android:layout_marginEnd="-62dp"
+            android:layout_marginBottom="15dp"
+            android:layout_toStartOf="@id/pick_a_date"
+            android:src="@drawable/calendar"/>
+
+        <EditText
+            android:id="@+id/select_time"
+            android:layout_width="282dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/pick_a_date"
+            android:layout_marginLeft="75dp"
+            android:layout_marginTop="10dp"
+            android:hint="Pick a time"
+            android:textSize="25sp"
+            android:clickable="true"
+            android:focusable="false"/>
+
+        <ImageView
+            android:id="@+id/time_imgview"
+            android:layout_width="97dp"
+            android:layout_height="91dp"
+            android:layout_marginStart="15dp"
+            android:layout_marginTop="250dp"
+            android:layout_marginEnd="-62dp"
+            android:layout_toStartOf="@id/select_time"
+            android:src="@drawable/ic_time" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_done"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_baseline_done_24"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:layout_margin="15dp"/>
+
+
+    </RelativeLayout>
+</LinearLayout>
