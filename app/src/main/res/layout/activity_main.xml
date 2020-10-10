@@ -50,7 +50,7 @@
             android:id="@+id/layout_info"
             android:orientation="vertical"
             android:padding="16dp"
-            android:background="#002984"
+            android:background="@color/colorPrimary"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
@@ -61,7 +61,8 @@
                 android:inputType="text"
                 android:textColorHint="@android:color/white"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorWhite"/>
 
             <EditText
                 android:id="@+id/edt_description"
@@ -70,7 +71,8 @@
                 android:inputType="textMultiLine"
                 android:textColorHint="@android:color/white"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorWhite"/>
 
         </LinearLayout>
 
