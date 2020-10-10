@@ -40,7 +40,7 @@ public class NotesActivity extends AppCompatActivity {
 
         recyclerView = findViewById(R.id.notesRecyclerView);
 
-        Query query = firebaseFirestore.collection(userId).document("note").collection("notes");
+        Query query = firebaseFirestore.collection(userId).document("note").collection("notes").orderBy("datetime", Query.Direction.ASCENDING);
 
         FirestoreRecyclerOptions<Note> options = new FirestoreRecyclerOptions.Builder<Note>().setQuery(query,Note.class).build();
 
@@ -120,5 +120,12 @@ public class NotesActivity extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
         firestoreRecyclerAdapter.stopListening();
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(NotesActivity.this,MainActivity.class);
+        startActivity(intent);
+        super.onBackPressed();
     }
 }

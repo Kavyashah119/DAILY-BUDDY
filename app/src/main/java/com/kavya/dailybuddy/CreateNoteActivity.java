@@ -94,7 +94,7 @@ public class CreateNoteActivity extends AppCompatActivity {
 
                 documentReference.set(note_map);
 
-                Toast.makeText(CreateNoteActivity.this, "Task saved", Toast.LENGTH_SHORT).show();
+                Toast.makeText(CreateNoteActivity.this, "Note saved", Toast.LENGTH_SHORT).show();
 
                 Intent intent = new Intent(CreateNoteActivity.this,NotesActivity.class);
                 finish();
