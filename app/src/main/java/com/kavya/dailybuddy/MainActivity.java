@@ -12,12 +12,14 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -37,11 +39,15 @@ import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.squareup.picasso.Picasso;
@@ -73,6 +79,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     Uri userphoto;
     TextView name_of_person;
     ImageView mImageView;
+
+    String preference="0";
+    int count=0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)                                              /* On create method */
@@ -143,12 +152,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 task.put("description",edt_description.getText().toString());
                 task.put("date", null);
                 task.put("time", null);
+                task.put("preference",preference);
 
-                documentReference.set(task);
+                documentReference.set(task).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        Log.d("TAG", "task added successfully");
+                    }
+                });
             }
         });
 
-        Query query = firebaseFirestore.collection(userId).document("task").collection("tasks");
+        Query query = firebaseFirestore.collection(userId).document("task").collection("tasks").orderBy("preference", Query.Direction.DESCENDING);
 
         FirestoreRecyclerOptions<notes> options = new FirestoreRecyclerOptions.Builder<notes>().setQuery(query,notes.class).build();
 
@@ -163,7 +178,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
 
             @Override
-            protected void onBindViewHolder(@NonNull final notesViewHolder holder, final int position, @NonNull final notes model) {
+            protected void onBindViewHolder(@NonNull final notesViewHolder holder, int position, @NonNull final notes model) {
 
                 holder.reminder.setVisibility(GONE);
                 holder.delete_button.setVisibility(GONE);
@@ -172,7 +187,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 holder.note_title.setText(model.getTitle());
                 holder.note_description.setText(model.getDescription());
 
-                if(model.getTime()==null || model.getTime().equals(""))
+               if(model.getTime()==null || model.getTime().equals(""))
                 {
                     Log.d("TAG", "Time is null" );
                 }
@@ -180,6 +195,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     Log.d("TAG", model.getTime());
                     holder.reminder.setVisibility(View.VISIBLE);
                 }
+
+                final DocumentReference imp = firebaseFirestore.collection(userId).document("task").collection("tasks").document(model.getTitle().toLowerCase());
+                imp.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        if(documentSnapshot.get("preference").equals("0")){
+                            Log.d("TOGGLE","Starting pref 0");
+                            holder.toggleButton.setBackground(getResources().getDrawable(R.drawable.ic_baseline_star_border_24));
+                        }
+                        else{
+                            Log.d("TOGGLE","Starting pref 1");
+                            holder.toggleButton.setBackground(getResources().getDrawable(R.drawable.ic_baseline_star_24));
+                        }
+                    }
+                });
 
                 holder.mcardview.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -227,6 +257,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         Intent intent = new Intent(MainActivity.this,EditOption.class);
                         intent.putExtra("title", model.getTitle());
                         intent.putExtra("description", model.getDescription());
+                        intent.putExtra("preference",preference);
                         finish();
                         startActivity(intent);
                     }
@@ -271,6 +302,31 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         snackbar.show();
                     }
                 });
+
+                final HashMap<String,Object> imp_map = new HashMap<>();
+
+                holder.toggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                        if(isChecked){
+                            Log.d("TOGGLE","Is Checked");
+                            holder.toggleButton.setBackground(getResources().getDrawable(R.drawable.ic_baseline_star_24));
+                            preference="1";
+                            imp_map.put("preference",preference);
+                            imp.update(imp_map);
+                            count++;
+                        }
+                        else{
+                            Log.d("TOGGLE","Is Not Checked");
+                            holder.toggleButton.setBackground(getResources().getDrawable(R.drawable.ic_baseline_star_border_24));
+                            preference="0";
+                            imp_map.put("preference",preference);
+                            imp.update(imp_map);
+                            count--;
+                        }
+                    }
+                });
+
             }
         };
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -297,7 +353,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 Toast.makeText(this, "Inside notes", Toast.LENGTH_SHORT).show();
                 return true;
             }
-            case R.id.favourites:
+            case R.id.Important:
             {
                 Toast.makeText(this, "Inside fav", Toast.LENGTH_SHORT).show();
                 return true;
@@ -316,6 +372,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
+
+
     private  class  notesViewHolder extends RecyclerView.ViewHolder                                /* View Holder */
     {
         TextView note_title, note_description;
@@ -326,6 +384,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         ImageButton date_icon,time_icon;
         TextView date_display,time_display;
         RadioButton radioButton;
+        ToggleButton toggleButton;
+
 
         public notesViewHolder(@NonNull View itemView) {
         super(itemView);
@@ -340,6 +400,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             date_display = itemView.findViewById(R.id.due_date_display);
             time_display = itemView.findViewById(R.id.due_time_display);
             radioButton = itemView.findViewById(R.id.btn_radio);
+            toggleButton = itemView.findViewById(R.id.important_icon);
         }
     }
 
