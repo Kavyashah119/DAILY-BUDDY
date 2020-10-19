@@ -4,11 +4,11 @@
     xmlns:tool="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-        android:id="@+id/card_view"
-        app:cardElevation="4dp"
-        app:cardCornerRadius="10dp"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginVertical="8dp">
+    android:id="@+id/card_view"
+    app:cardElevation="4dp"
+    app:cardCornerRadius="10dp"
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginVertical="8dp">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -68,10 +68,21 @@
                 android:layout_width="30dp"
                 android:layout_height="30dp"
                 android:src="@drawable/reminder"
-                android:layout_alignParentRight="true"
+                android:layout_toLeftOf="@id/important_icon"
                 android:layout_marginTop="15dp"
                 android:layout_marginRight="10dp"
                 android:visibility="gone"/>
+
+            <ToggleButton
+                android:id="@+id/important_icon"
+                android:layout_width="40dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_marginTop="15dp"
+                android:layout_marginRight="10dp"
+                android:background="@drawable/ic_baseline_star_border_24"
+                android:textOn=""
+                android:textOff=""/>
 
             <ImageButton
                 android:id="@+id/due_date_icon"
@@ -119,4 +130,5 @@
                 android:visibility="gone"/>
 
         </RelativeLayout>
+
 </androidx.cardview.widget.CardView>
