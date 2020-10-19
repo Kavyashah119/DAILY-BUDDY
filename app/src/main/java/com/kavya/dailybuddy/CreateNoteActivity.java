@@ -1,6 +1,7 @@
 package com.kavya.dailybuddy;
 
 import android.Manifest;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -63,6 +64,7 @@ public class CreateNoteActivity extends AppCompatActivity {
     private ImageView imageNote;
     private String selectedImagePath;
     ImageView pin_imageview;
+    ImageView delete;
 
     String pinned = "0";
 
@@ -98,6 +100,7 @@ public class CreateNoteActivity extends AppCompatActivity {
         textWebURL = findViewById(R.id.textWebURL);
         layoutWebURL = findViewById(R.id.layoutWebURL);
         pin_imageview = findViewById(R.id.pin);
+        delete = findViewById(R.id.delete);
 
         selectedNoteColor = "#333333";
         selectedImagePath = "";
@@ -242,6 +245,43 @@ public class CreateNoteActivity extends AppCompatActivity {
                 Intent intent = new Intent(CreateNoteActivity.this,NotesActivity.class);
                 finish();
                 startActivity(intent);
+            }
+        });
+
+        delete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(CreateNoteActivity.this);
+
+                builder.setTitle("Confirm Delete");
+                builder.setMessage("Are you sure you want to delete?");
+                builder.setCancelable(true);
+
+                builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        try{
+                            firebaseFirestore.collection(userId).document("note").collection("notes").document(title_from_intent).delete();
+                            Intent intent1 = new Intent(CreateNoteActivity.this,NotesActivity.class);
+                            finish();
+                            startActivity(intent1);
+                        }catch (Exception e){
+                            firebaseFirestore.collection(userId).document("note").collection("notes").document(inputNoteTitle.getText().toString()).delete();
+                            Intent intent1 = new Intent(CreateNoteActivity.this,NotesActivity.class);
+                            finish();
+                            startActivity(intent1);
+                        }
+                    }
+                });
+
+                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+                AlertDialog alertDialog = builder.create();
+                alertDialog.show();
             }
         });
 
