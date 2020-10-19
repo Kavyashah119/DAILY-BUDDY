@@ -55,6 +55,7 @@ public class EditOption extends AppCompatActivity {
 
         final String edit_title = intent.getStringExtra("title");
         final String edit_description = intent.getStringExtra("description");
+        final String edit_preference = intent.getStringExtra("preference");
 
         calendar_img = findViewById(R.id.calendar);
         date = findViewById(R.id.pick_a_date);
@@ -130,6 +131,7 @@ public class EditOption extends AppCompatActivity {
                     save_changes.put("time", null);
                 else
                     save_changes.put("time", time.getText().toString());
+                save_changes.put("preference",edit_preference);
 
                 documentReference.set(save_changes).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
