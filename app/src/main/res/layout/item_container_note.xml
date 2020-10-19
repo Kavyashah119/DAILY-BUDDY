@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/layout_note"
     android:orientation="vertical"
     android:layout_width="match_parent"
@@ -7,6 +8,28 @@
     android:layout_marginStart="@dimen/_12sdp"
     android:layout_marginTop="@dimen/_12sdp"
     android:background="@drawable/background_note">
+
+    <com.makeramen.roundedimageview.RoundedImageView
+        android:id="@+id/imageNote"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:visibility="gone"
+        app:riv_corner_radius_top_left="@dimen/_10sdp"
+        app:riv_corner_radius_top_right="@dimen/_10sdp"/>
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/pinned_note"
+            android:layout_width="45dp"
+            android:layout_height="27dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="150dp"
+            android:src="@drawable/pin"
+            android:visibility="visible" />
 
     <TextView
         android:id="@+id/textTitle"
@@ -19,6 +42,9 @@
         android:textColor="@color/colorWhite"
         android:includeFontPadding="false"
         android:fontFamily="@font/ubuntu_bold" />
+
+    </RelativeLayout>
+
     <TextView
         android:id="@+id/textSubTitle"
         android:layout_width="match_parent"
@@ -35,6 +61,20 @@
     <TextView
         android:id="@+id/textNote"
         android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginStart="@dimen/_8sdp"
+        android:layout_marginEnd="@dimen/_8sdp"
+        android:layout_marginTop="@dimen/_4sdp"
+        android:layout_marginBottom="@dimen/_4sdp"
+        android:scrollbars="vertical"
+        android:textSize="@dimen/_12ssp"
+        android:textColor="@color/colorNoteSubtitleText"
+        android:includeFontPadding="false"
+        android:fontFamily="@font/ubuntu_regular" />
+
+    <TextView
+        android:id="@+id/textURL"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/_8sdp"
         android:layout_marginEnd="@dimen/_8sdp"
@@ -43,7 +83,8 @@
         android:textSize="@dimen/_12ssp"
         android:textColor="@color/colorNoteSubtitleText"
         android:includeFontPadding="false"
-        android:fontFamily="@font/ubuntu_regular" />
+        android:fontFamily="@font/ubuntu_regular"
+        android:visibility="gone"/>
 
     <TextView
         android:id="@+id/textDateTimeDisplay"
@@ -56,7 +97,5 @@
         android:textColor="@color/colorNoteSubtitleText"
         android:includeFontPadding="false"
         android:fontFamily="@font/ubuntu_regular" />
-
-
 
 </LinearLayout>

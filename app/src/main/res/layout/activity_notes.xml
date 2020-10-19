@@ -35,28 +35,24 @@
         android:paddingEnd="@dimen/_10sdp"
         android:layout_below="@id/textMyNotes">
 
-        <ImageView
+        <!--<ImageView
             android:layout_width="@dimen/_20sdp"
             android:layout_height="@dimen/_20sdp"
             android:contentDescription="@string/app_name"
             android:src="@drawable/ic_baseline_search_24"
-            app:tint="@color/colorSearchIcon" />
+            app:tint="@color/colorSearchIcon" /> -->
 
-        <EditText
+        <androidx.appcompat.widget.SearchView
             android:id="@+id/inputSearch"
             android:layout_width="match_parent"
             android:layout_height="@dimen/_35sdp"
-            android:layout_marginStart="@dimen/_12sdp"
             android:background="@null"
             android:fontFamily="@font/ubuntu_regular"
-            android:hint="@string/search_notes"
             android:imeOptions="actionDone"
             android:importantForAutofill="no"
             android:includeFontPadding="false"
             android:inputType="text"
-            android:textColor="@color/colorWhite"
-            android:textColorHint="@color/colorTextHint"
-            android:textSize="@dimen/_13ssp" />
+            android:textSize="@dimen/_13ssp"/>
 
     </LinearLayout>
 
