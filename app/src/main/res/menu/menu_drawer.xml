@@ -5,9 +5,9 @@
         android:title="Notes"
         android:icon="@drawable/ic_baseline_notes_24"/>
     <item
-        android:id="@+id/favourites"
-        android:title="Favourites"
-        android:icon="@drawable/ic_baseline_favorite_24"/>
+        android:id="@+id/Important"
+        android:title="Important"
+        android:icon="@drawable/ic_baseline_star_border_24"/>
     <item
         android:id="@+id/profile"
         android:title="Profile"
