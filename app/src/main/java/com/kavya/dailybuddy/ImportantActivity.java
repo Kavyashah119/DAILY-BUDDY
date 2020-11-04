@@ -86,6 +86,8 @@ public class ImportantActivity extends AppCompatActivity {
                             documentReference.delete();
                         }else if(documentSnapshot.get("preference").equals("1")){
                             holder.impBtn.setBackground(getResources().getDrawable(R.drawable.ic_baseline_star_24));
+                        }else {
+                            firebaseFirestore.collection(userId).document("task").collection("imp").document(model.getTitle().toLowerCase()).delete();
                         }
                     }
                 });

@@ -235,7 +235,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 holder.note_title.setText(model.getTitle());
                 holder.note_description.setText(model.getDescription());
 
-                holder.radioButton.setBackground(getResources().getDrawable(R.drawable.ic_baseline_radio_button));
+                //holder.radioButton.setBackground(getResources().getDrawable(R.drawable.ic_baseline_radio_button));
+                holder.radioButton.setBackgroundResource(R.drawable.ic_baseline_radio_button);
 
                if(model.getTime()==null || model.getTime().equals("") || model.getDate()==null || model.getDate().equals(""))
                 {
@@ -271,17 +272,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             if(documentSnapshot.get("preference").equals("0")){
                                 Log.d("TOGGLE","Starting pref 0");
                                 holder.toggleButton.setBackground(getResources().getDrawable(R.drawable.ic_baseline_star_border_24));
-                                holder.radioButton.setBackground(getResources().getDrawable(R.drawable.ic_baseline_radio_button));
+                               // holder.radioButton.setBackground(getResources().getDrawable(R.drawable.ic_baseline_radio_button));
+                                holder.radioButton.setBackgroundResource(R.drawable.ic_baseline_radio_button);
                             }
                             else if(documentSnapshot.get("preference").equals("1")){
                                 Log.d("TOGGLE","Starting pref 1");
                                 holder.toggleButton.setBackground(getResources().getDrawable(R.drawable.ic_baseline_star_24));
-                                holder.radioButton.setBackground(getResources().getDrawable(R.drawable.ic_baseline_radio_button));
+                               // holder.radioButton.setBackground(getResources().getDrawable(R.drawable.ic_baseline_radio_button));
+                                holder.radioButton.setBackgroundResource(R.drawable.ic_baseline_radio_button);
                              }
                             else{
                                 holder.toggleButton.setBackground(getResources().getDrawable(R.drawable.ic_baseline_star_border_24));
                                 holder.note_title.setPaintFlags(holder.note_title.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-                                holder.radioButton.setBackground(getResources().getDrawable(R.drawable.done));
+                              //  holder.radioButton.setBackground(getResources().getDrawable(R.drawable.done));
+                                holder.radioButton.setBackgroundResource(R.drawable.done);
                             }
 
                         }catch (Exception e){
@@ -349,11 +353,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             preference="-1";
                             model.preference="-1";
                             firebaseFirestore.collection(userId).document("task").collection("tasks").document(model.getTitle().toLowerCase()).update("preference",model.getPreference());
+                            firebaseFirestore.collection(userId).document("task").collection("imp").document(model.getTitle().toLowerCase()).update("preference",model.getPreference());
                             holder.note_title.setPaintFlags(holder.note_title.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+
+                            count--;
+                            initializeCountDrawer(count);
 //                            holder.radioButton.setBackground(getResources().getDrawable(R.drawable.ic_baseline_radio_button_checked));
                             }
                         else{
-                            holder.radioButton.setBackground(getResources().getDrawable(R.drawable.ic_baseline_radio_button));
+                          //  holder.radioButton.setBackground(getResources().getDrawable(R.drawable.ic_baseline_radio_button));
+                            holder.radioButton.setBackgroundResource(R.drawable.ic_baseline_radio_button);
                             preference="0";
                             model.preference="0";
                             firebaseFirestore.collection(userId).document("task").collection("tasks").document(model.getTitle().toLowerCase()).update("preference",model.getPreference());
@@ -362,7 +371,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 });
 
                 holder.note_title.setPaintFlags(0);
-                holder.radioButton.setBackground(getResources().getDrawable(R.drawable.ic_baseline_radio_button));
+              //  holder.radioButton.setBackground(getResources().getDrawable(R.drawable.ic_baseline_radio_button));
+                holder.radioButton.setBackgroundResource(R.drawable.ic_baseline_radio_button);
 
 //                holder.radioButton.setOnClickListener(new View.OnClickListener() {
 //                    @Override
@@ -461,12 +471,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             holder.toggleButton.setBackground(getResources().getDrawable(R.drawable.ic_baseline_star_border_24));
                             preference="0";
                             DocumentReference dr = firebaseFirestore.collection(userId).document("task").collection("imp").document(model.getTitle());
-                            dr.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
-                                @Override
-                                public void onSuccess(Void aVoid) {
-                                    Toast.makeText(MainActivity.this, "bekarrr", Toast.LENGTH_SHORT).show();
-                                }
-                            });
+                            dr.delete();
                             imp_map.put("preference",preference);
                             imp.update(imp_map);
                             count--;
