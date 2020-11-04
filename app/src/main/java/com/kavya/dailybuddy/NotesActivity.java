@@ -285,7 +285,6 @@ public class NotesActivity extends AppCompatActivity {
 
             }
         };
-
         firestoreRecyclerAdapter.startListening();
         recyclerView.setLayoutManager(new StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL));
         recyclerView.setAdapter(firestoreRecyclerAdapter);

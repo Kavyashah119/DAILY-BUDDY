@@ -123,21 +123,32 @@ public class CreateNoteActivity extends AppCompatActivity {
 
         try{
             final String color_from_intent = intent.getStringExtra("note_color");
-            GradientDrawable gradientDrawableColor = (GradientDrawable)viewSubtitleIndicator.getBackground();
-            gradientDrawableColor.setColor(Color.parseColor(color_from_intent));
-              } catch (Exception e){
+            //GradientDrawable gradientDrawableColor = (GradientDrawable)viewSubtitleIndicator.getBackground();
+            //gradientDrawableColor.setColor(Color.parseColor(color_from_intent));
+            selectedNoteColor=color_from_intent;
+            setSubtitleIndicatorColor();
+         }
+        catch (Exception e){
             Log.d("TAG",e.getMessage());
         }
 
         try{
-            String img_from_intent = intent.getStringExtra("note_img");
+            final String img_from_intent = intent.getStringExtra("note_img");
+            if(!(img_from_intent.equals(""))){
+                imageNote.setImageBitmap(BitmapFactory.decodeFile(img_from_intent));
+                imageNote.setVisibility(View.VISIBLE);
+            }
 
         }catch(Exception e){
             Log.d("TAG",e.getMessage());
         }
 
         try {
-            String url_from_intent = intent.getStringExtra("note_url");
+            final String url_from_intent = intent.getStringExtra("note_url");
+            if(!(url_from_intent.equals(""))){
+                textWebURL.setText(url_from_intent);
+                layoutWebURL.setVisibility(View.VISIBLE);
+            }
 
         }catch(Exception e){
             Log.d("TAG",e.getMessage());
@@ -247,6 +258,7 @@ public class CreateNoteActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
 
         delete.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -392,11 +404,15 @@ public class CreateNoteActivity extends AppCompatActivity {
 
     private void setSubtitleIndicatorColor(){
         GradientDrawable gradientDrawable = (GradientDrawable)viewSubtitleIndicator.getBackground();
-        gradientDrawable.setColor(Color.parseColor(selectedNoteColor));
+        //gradientDrawable.setColor(Color.parseColor(selectedNoteColor));
+        try{
+            gradientDrawable.setColor(Color.parseColor(selectedNoteColor));
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     private void selectImage(){
-        Log.d("PHOTO","Select image");
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         if(intent.resolveActivity(getPackageManager()) != null){
             Log.d("PHOTO","if in select img");
@@ -426,7 +442,6 @@ public class CreateNoteActivity extends AppCompatActivity {
                 Uri selectedImageUri = data.getData();
                 if(selectedImageUri != null){
                     try{
-
                         Log.d("PHOTO","Try");
                         InputStream inputStream = getContentResolver().openInputStream(selectedImageUri);
                         Bitmap bitmap = BitmapFactory.decodeStream(inputStream);

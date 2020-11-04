@@ -3,11 +3,14 @@ package com.kavya.dailybuddy;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Paint;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
+import android.speech.RecognizerIntent;
 import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -16,12 +19,13 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.RadioButton;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -29,6 +33,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.view.GravityCompat;
+import androidx.core.view.MenuItemCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -39,6 +44,8 @@ import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -50,8 +57,10 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.SetOptions;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -73,15 +82,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     NavigationView navigationView;
     CoordinatorLayout coordinatorLayout;
     Toolbar toolbar;
-    TextView textView;
 
-    String username;
+    String username,usermail;
     Uri userphoto;
-    TextView name_of_person;
+    TextView name_of_person,email_of_person;
     ImageView mImageView;
 
     String preference="0";
     int count=0;
+
+    ImageView titleMic,desMic;
+
+    GoogleSignInClient googleSignInClient;
+
+    RelativeLayout relativeLayout;
+
+    TextView impTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)                                              /* On create method */
@@ -96,7 +112,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navigationView = findViewById(R.id.nav_view);
         coordinatorLayout = findViewById(R.id.coordinator_layout);
         toolbar = findViewById(R.id.toolbar);
-        textView = findViewById(R.id.person_name);
+        titleMic = findViewById(R.id.title_mic);
+        desMic = findViewById(R.id.des_mic);
+        relativeLayout = findViewById(R.id.relative_layout);
+
+        impTextView = (TextView) MenuItemCompat.getActionView(navigationView.getMenu().findItem(R.id.Important));
+
+        final GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN) /* Configure Google SignIn */
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
+
+        googleSignInClient = GoogleSignIn.getClient(MainActivity.this,gso);
 
         drawerLayout.closeDrawers();
 
@@ -104,6 +131,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navigationView.bringToFront();
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(MainActivity.this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        toggle.getDrawerArrowDrawable().setColor(getResources().getColor(R.color.colorNoteColor2));
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 
@@ -119,13 +147,30 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         userId =account.getId();
         username = account.getDisplayName();
         userphoto = account.getPhotoUrl();
+        usermail = account.getEmail();
 
         View headerview = navigationView.getHeaderView(0);
         name_of_person = headerview.findViewById(R.id.person_name);
         name_of_person.setText(username);
+        email_of_person = headerview.findViewById(R.id.person_email);
+        email_of_person.setText(usermail);
 
         mImageView = headerview.findViewById(R.id.person_photo);
         Picasso.with(this).load(userphoto).into(mImageView);
+
+        titleMic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                recordSpeechTitle();
+            }
+        });
+
+        desMic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                recordSpeechDescription();
+            }
+        });
 
         floatingActionButton.setOnClickListener(new View.OnClickListener()
        {
@@ -134,7 +179,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                 if(edt_title.getText().toString().isEmpty())
                 {
-                    int ecolor = R.color.errorColor;
+                    int ecolor = R.color.colorNoteColor2;
                     String estring = "Please enter a title";
                     ForegroundColorSpan fgcspan = new ForegroundColorSpan(getResources().getColor(ecolor));
                     SpannableStringBuilder ssbuilder = new SpannableStringBuilder(estring);
@@ -152,7 +197,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 task.put("description",edt_description.getText().toString());
                 task.put("date", null);
                 task.put("time", null);
-                task.put("preference",preference);
+                task.put("preference","0");
 
                 documentReference.set(task).addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
@@ -160,10 +205,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         Log.d("TAG", "task added successfully");
                     }
                 });
+
+                edt_title.getText().clear();
+                edt_description.getText().clear();
             }
         });
 
-        Query query = firebaseFirestore.collection(userId).document("task").collection("tasks").orderBy("preference", Query.Direction.DESCENDING);
+        final Query query = firebaseFirestore.collection(userId).document("task").collection("tasks").orderBy("preference", Query.Direction.DESCENDING);
 
         FirestoreRecyclerOptions<notes> options = new FirestoreRecyclerOptions.Builder<notes>().setQuery(query,notes.class).build();
 
@@ -187,7 +235,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 holder.note_title.setText(model.getTitle());
                 holder.note_description.setText(model.getDescription());
 
-               if(model.getTime()==null || model.getTime().equals(""))
+                holder.radioButton.setBackground(getResources().getDrawable(R.drawable.ic_baseline_radio_button));
+
+               if(model.getTime()==null || model.getTime().equals("") || model.getDate()==null || model.getDate().equals(""))
                 {
                     Log.d("TAG", "Time is null" );
                 }
@@ -196,17 +246,55 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     holder.reminder.setVisibility(View.VISIBLE);
                 }
 
+               /* if(holder.reminder.getVisibility()==View.VISIBLE){
+                    String message = "This is a demo notification";
+                    NotificationCompat.Builder builder = new NotificationCompat.Builder(MainActivity.this,"DailyBuddy")
+                            .setSmallIcon(R.drawable.kavyalogo)
+                            .setContentTitle("New Notification")
+                            .setContentText(message)
+                            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                            .setAutoCancel(true);
+
+                    NotificationManager notificationManager = (NotificationManager)getSystemService(
+                            Context.NOTIFICATION_SERVICE
+                    );
+                    notificationManager.notify(0,builder.build());
+                } */
+
                 final DocumentReference imp = firebaseFirestore.collection(userId).document("task").collection("tasks").document(model.getTitle().toLowerCase());
                 imp.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        if(documentSnapshot.get("preference").equals("0")){
-                            Log.d("TOGGLE","Starting pref 0");
-                            holder.toggleButton.setBackground(getResources().getDrawable(R.drawable.ic_baseline_star_border_24));
+                        Log.d("SNAPSHOT","INSIDE");
+
+                        try{
+                            if(documentSnapshot.get("preference").equals("0")){
+                                Log.d("TOGGLE","Starting pref 0");
+                                holder.toggleButton.setBackground(getResources().getDrawable(R.drawable.ic_baseline_star_border_24));
+                                holder.radioButton.setBackground(getResources().getDrawable(R.drawable.ic_baseline_radio_button));
+                            }
+                            else if(documentSnapshot.get("preference").equals("1")){
+                                Log.d("TOGGLE","Starting pref 1");
+                                holder.toggleButton.setBackground(getResources().getDrawable(R.drawable.ic_baseline_star_24));
+                                holder.radioButton.setBackground(getResources().getDrawable(R.drawable.ic_baseline_radio_button));
+                             }
+                            else{
+                                holder.toggleButton.setBackground(getResources().getDrawable(R.drawable.ic_baseline_star_border_24));
+                                holder.note_title.setPaintFlags(holder.note_title.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                                holder.radioButton.setBackground(getResources().getDrawable(R.drawable.done));
+                            }
+
+                        }catch (Exception e){
+                            e.printStackTrace();
                         }
-                        else{
-                            Log.d("TOGGLE","Starting pref 1");
-                            holder.toggleButton.setBackground(getResources().getDrawable(R.drawable.ic_baseline_star_24));
+
+                        try{
+                            if(documentSnapshot.get("preference").equals("1")){
+                                count++;
+                                initializeCountDrawer(count);
+                            }
+                        }catch (Exception e){
+                            e.printStackTrace();
                         }
                     }
                 });
@@ -222,13 +310,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         if(model.getDate()!=null){
                             holder.date_icon.setVisibility(View.VISIBLE);
                             holder.date_display.setVisibility(View.VISIBLE);
-                            holder.date_display.setText(model.getDate());
+
+                            if(model.getDate().equals("")){
+                                holder.date_display.setText(R.string.no_duedate);
+                            }else{
+                                holder.date_display.setText(model.getDate());
+                            }
                         }
 
                         if(model.getTime()!=null){
                             holder.time_icon.setVisibility(View.VISIBLE);
                             holder.time_display.setVisibility(View.VISIBLE);
-                            holder.time_display.setText(model.getTime());
+
+                            if(model.getTime().equals("")){
+                                holder.time_display.setText(R.string.no_duetime);
+                            }else{
+                                holder.time_display.setText(model.getTime());
+                            }
                         }
                     }
                     else{
@@ -243,13 +341,40 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     }
                 });
 
-                holder.radioButton.setOnClickListener(new View.OnClickListener() {
+                holder.radioButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                     @Override
-                    public void onClick(View v) {
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                        if(isChecked){
+                            holder.radioButton.setBackground(getResources().getDrawable(R.drawable.done));
+                            preference="-1";
+                            model.preference="-1";
+                            firebaseFirestore.collection(userId).document("task").collection("tasks").document(model.getTitle().toLowerCase()).update("preference",model.getPreference());
                             holder.note_title.setPaintFlags(holder.note_title.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-                            firebaseFirestore.collection(userId).document("task").collection("tasks").document(model.getTitle().toLowerCase()).delete();
+//                            holder.radioButton.setBackground(getResources().getDrawable(R.drawable.ic_baseline_radio_button_checked));
+                            }
+                        else{
+                            holder.radioButton.setBackground(getResources().getDrawable(R.drawable.ic_baseline_radio_button));
+                            preference="0";
+                            model.preference="0";
+                            firebaseFirestore.collection(userId).document("task").collection("tasks").document(model.getTitle().toLowerCase()).update("preference",model.getPreference());
+                        }
                     }
                 });
+
+                holder.note_title.setPaintFlags(0);
+                holder.radioButton.setBackground(getResources().getDrawable(R.drawable.ic_baseline_radio_button));
+
+//                holder.radioButton.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                            holder.note_title.setPaintFlags(holder.note_title.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+//                            model.preference="-1";
+//                            holder.toggleButton.setBackground(getResources().getDrawable(R.drawable.ic_baseline_star_border_24));
+//
+//                        firebaseFirestore.collection(userId).document("task").collection("tasks").document(model.getTitle().toLowerCase()).update("preference",model.getPreference());
+//                           // firebaseFirestore.collection(userId).document("task").collection("tasks").document(model.getTitle().toLowerCase()).delete();
+//                    }
+//                });
 
                 holder.edit_button.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -257,7 +382,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         Intent intent = new Intent(MainActivity.this,EditOption.class);
                         intent.putExtra("title", model.getTitle());
                         intent.putExtra("description", model.getDescription());
-                        intent.putExtra("preference",preference);
+                        intent.putExtra("preference",model.getPreference());
+                        intent.putExtra("duedate",model.getDate());
+                        intent.putExtra("duetime",model.getTime());
                         finish();
                         startActivity(intent);
                     }
@@ -277,6 +404,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 firebaseFirestore.collection(userId).document("task").collection("tasks").document(model.getTitle().toLowerCase()).delete();
+                                firebaseFirestore.collection(userId).document("task").collection("imp").document(model.getTitle().toLowerCase()).delete();
                                 showSnackBar();
                             }
                         });
@@ -297,6 +425,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                     @Override
                                     public void onClick(View v) {
                                         firebaseFirestore.collection(userId).document("task").collection("tasks").document(model.getTitle().toLowerCase()).set(model);
+                                        firebaseFirestore.collection(userId).document("task").collection("imp").document(model.getTitle().toLowerCase()).set(model);
                                     }
                                 });
                         snackbar.show();
@@ -312,17 +441,36 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             Log.d("TOGGLE","Is Checked");
                             holder.toggleButton.setBackground(getResources().getDrawable(R.drawable.ic_baseline_star_24));
                             preference="1";
+
+                            DocumentReference dr = firebaseFirestore.collection(userId).document("task").collection("imp").document(model.getTitle());
+                            HashMap<String,Object> map = new HashMap<>();
+                            map.put("title",model.getTitle());
+                            map.put("description",model.getDescription());
+                            map.put("preference",preference);
+                            map.put("date",model.getDate());
+                            map.put("time",model.getTime());
+                            dr.set(map, SetOptions.merge());
+
                             imp_map.put("preference",preference);
                             imp.update(imp_map);
-                            count++;
+
+
                         }
                         else{
                             Log.d("TOGGLE","Is Not Checked");
                             holder.toggleButton.setBackground(getResources().getDrawable(R.drawable.ic_baseline_star_border_24));
                             preference="0";
+                            DocumentReference dr = firebaseFirestore.collection(userId).document("task").collection("imp").document(model.getTitle());
+                            dr.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    Toast.makeText(MainActivity.this, "bekarrr", Toast.LENGTH_SHORT).show();
+                                }
+                            });
                             imp_map.put("preference",preference);
                             imp.update(imp_map);
                             count--;
+                            initializeCountDrawer(count);
                         }
                     }
                 });
@@ -333,12 +481,54 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         recyclerView.setAdapter(adapter);
     }
 
+    private void initializeCountDrawer(int count) {
+        impTextView.setGravity(Gravity.CENTER_VERTICAL);
+        impTextView.setTypeface(null, Typeface.BOLD);
+        impTextView.setTextColor(getResources().getColor(R.color.colorNoteColor5));
+
+        impTextView.setText(""+count);
+    }
+
+    private void recordSpeechTitle() {
+        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,"en-US");
+        try{
+            startActivityForResult(intent,1);
+
+        }catch (Exception e){
+            Toast.makeText(this, "Your device doesnot support speech record", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void recordSpeechDescription() {
+        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,"en-US");
+        try{
+            startActivityForResult(intent,2);
+
+        }catch (Exception e){
+            Toast.makeText(this, "Your device doesnot support speech record", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode==1 && resultCode==RESULT_OK && data!= null){
+            ArrayList<String> text = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+            edt_title.setText(text.get(0));
+        } else if(requestCode==2 && resultCode==RESULT_OK && data!= null){
+            ArrayList<String> text = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+            edt_description.setText(text.get(0));
+        }
+    }
+
     @Override
     public void onBackPressed() {
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
-            drawerLayout.getDrawerLockMode(drawerLayout);
+            drawerLayout.closeDrawers();
         } else {
-            super.onBackPressed();
+            finish();
         }
     }
 
@@ -356,23 +546,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case R.id.Important:
             {
                 Toast.makeText(this, "Inside fav", Toast.LENGTH_SHORT).show();
-                return true;
+                 Intent intent = new Intent(MainActivity.this,ImportantActivity.class);
+                 intent.putExtra("userID",userId);
+                 finish();
+                 startActivity(intent);
+                 return true;
             }
-            case R.id.about_app:
+            case R.id.logout:
             {
-                Toast.makeText(this, "Inside app", Toast.LENGTH_SHORT).show();
-                return true;
-            }
-            case R.id.profile:
-            {
-                Toast.makeText(this, "Inside pro", Toast.LENGTH_SHORT).show();
+                googleSignInClient.signOut();
+                finish();
+                startActivity(new Intent(MainActivity.this,LoginActivity.class));
+                Toast.makeText(this, "Logout", Toast.LENGTH_SHORT).show();
                 return true;
             }
         }
         return true;
     }
-
-
 
     private  class  notesViewHolder extends RecyclerView.ViewHolder                                /* View Holder */
     {
@@ -383,9 +573,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         ImageView reminder;
         ImageButton date_icon,time_icon;
         TextView date_display,time_display;
-        RadioButton radioButton;
+        ToggleButton radioButton;
         ToggleButton toggleButton;
-
 
         public notesViewHolder(@NonNull View itemView) {
         super(itemView);

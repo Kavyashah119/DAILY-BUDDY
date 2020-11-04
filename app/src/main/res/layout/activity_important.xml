@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ImportantActivity"
+    android:background="@color/colorPrimary">
+
+        <ImageView
+            android:id="@+id/star_icon"
+            android:layout_width="38dp"
+            android:layout_height="64dp"
+            android:layout_marginTop="12dp"
+            android:src="@drawable/ic_baseline_star_24"
+            android:layout_marginLeft="10dp"/>
+
+        <TextView
+            android:id="@+id/important_title"
+            android:layout_width="284dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_8sdp"
+            android:layout_marginLeft="72dp"
+            android:layout_marginTop="@dimen/_15sdp"
+            android:layout_marginEnd="@dimen/_20sdp"
+            android:layout_toRightOf="@id/star_icon"
+            android:text="Important"
+            android:textColor="@color/colorNoteColor2"
+            android:textSize="@dimen/_28ssp" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/important_tasks"
+            app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/important_title"
+            android:layout_marginTop="@dimen/_5sdp"
+            android:layout_marginBottom="30dp"/>
+
+</RelativeLayout>

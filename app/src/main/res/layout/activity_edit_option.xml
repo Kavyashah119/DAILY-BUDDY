@@ -79,7 +79,29 @@
             android:layout_marginTop="250dp"
             android:layout_marginEnd="-62dp"
             android:layout_toStartOf="@id/select_time"
-            android:src="@drawable/ic_time" />
+            android:src="@drawable/alarm" />
+
+        <ImageView
+            android:id="@+id/set_reminder_icon"
+            android:layout_width="54dp"
+            android:layout_height="71dp"
+            android:layout_marginStart="15dp"
+            android:layout_marginTop="330dp"
+            android:src="@drawable/notifyme" />
+
+        <EditText
+            android:id="@+id/set_reminder"
+            android:layout_width="282dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/select_time"
+            android:layout_marginLeft="75dp"
+            android:layout_marginTop="10dp"
+            android:hint="Remind me"
+            android:textColorHint="@color/colorTextHint"
+            android:textSize="25sp"
+            android:clickable="true"
+            android:focusable="false"
+            android:textColor="@color/colorWhite"/>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab_done"
@@ -89,7 +111,6 @@
             android:layout_alignParentBottom="true"
             android:layout_alignParentEnd="true"
             android:layout_margin="15dp"/>
-
 
     </RelativeLayout>
 </LinearLayout>

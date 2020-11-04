@@ -27,6 +27,9 @@
     <string name="add">ADD</string>
     <string name="cancel_dialog">CANCEL</string>
     <string name="delete_note">Delete Note</string>
+    <string name="sign_in_with_google">Sign in with Google</string>
+    <string name="no_duedate">No duedate set</string>
+    <string name="no_duetime">No duetime set</string>
 
 
 </resources>

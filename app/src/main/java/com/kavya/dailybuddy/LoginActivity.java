@@ -39,7 +39,6 @@ public class LoginActivity extends AppCompatActivity  {
     private GoogleSignInClient mGoogleSignInClient;
     private String TAG = "LoginActivity";
     private FirebaseAuth mAuth;
-    private Button btnSignOut;
     private int RC_SIGN_IN = 1;
     protected String personName, personEmail, personId;
     Uri personPhoto;
@@ -97,7 +96,6 @@ public class LoginActivity extends AppCompatActivity  {
 
         signInButton = findViewById(R.id.sign_in_button);
         mAuth = FirebaseAuth.getInstance();
-        btnSignOut = findViewById(R.id.sign_out_button);
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN) /* Configure Google SignIn */
                 .requestIdToken(getString(R.string.default_web_client_id))
@@ -119,14 +117,6 @@ public class LoginActivity extends AppCompatActivity  {
             }
         });
 
-        btnSignOut.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mGoogleSignInClient.signOut();
-                Toast.makeText(LoginActivity.this, "You are Logged Out", Toast.LENGTH_SHORT).show();
-                btnSignOut.setVisibility(View.VISIBLE);
-            }
-        });
     }
 
     private void signIn(){
@@ -179,7 +169,6 @@ public class LoginActivity extends AppCompatActivity  {
     }
 
     private void updateUI(FirebaseUser fUser){
-        btnSignOut.setVisibility(View.VISIBLE);
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(getApplicationContext());
         if(account != null){
             personName = account.getDisplayName();
@@ -194,6 +183,11 @@ public class LoginActivity extends AppCompatActivity  {
     @Override
     protected void onStart() {
         super.onStart();
+        if(GoogleSignIn.getLastSignedInAccount(getApplicationContext())!=null){
+            Intent intent = new Intent(LoginActivity.this,MainActivity.class);
+            finish();
+            startActivity(intent);
+        }
     }
 
     @Override

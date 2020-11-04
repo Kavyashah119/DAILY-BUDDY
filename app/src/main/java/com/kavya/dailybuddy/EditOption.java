@@ -1,7 +1,11 @@
 package com.kavya.dailybuddy;
 
+import android.app.AlarmManager;
 import android.app.DatePickerDialog;
+import android.app.Notification;
+import android.app.PendingIntent;
 import android.app.TimePickerDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -15,6 +19,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -29,33 +34,48 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 
 public class EditOption extends AppCompatActivity {
 
     FirebaseFirestore firebaseFirestore;
-
     ImageView calendar_img,time_img;
-    EditText title_edttext,des_edttxt,date,time;
+    EditText title_edttext,des_edttxt,date,time,set_reminder;
     FloatingActionButton floatingActionButton;
     private int mDate,mMonth,mYear;
     private int mHour,mMinute;
     String userId;
+
+    String date_time = "";
+    String time_date="";
+    int year;
+    int month;
+    int day;
+
+    int hour;
+    int min;
+
+    String final_notify= "";
+
+    public static final String NOTIFICATION_CHANNEL_ID = "10001" ;
+    private final static String default_notification_channel_id = "default" ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_option);
 
-        Intent intent = getIntent();
+        final Intent intent = getIntent();
 
         firebaseFirestore = FirebaseFirestore.getInstance();
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(getApplicationContext()); /* getting user ID */
         userId =account.getId();
 
-
         final String edit_title = intent.getStringExtra("title");
         final String edit_description = intent.getStringExtra("description");
         final String edit_preference = intent.getStringExtra("preference");
+        final String edit_date = intent.getStringExtra("duedate");
+        final String edit_time = intent.getStringExtra("duetime");
 
         calendar_img = findViewById(R.id.calendar);
         date = findViewById(R.id.pick_a_date);
@@ -64,9 +84,81 @@ public class EditOption extends AppCompatActivity {
         title_edttext = findViewById(R.id.title_edt);
         des_edttxt = findViewById(R.id.des_edt);
         floatingActionButton = findViewById(R.id.fab_done);
+        set_reminder = findViewById(R.id.set_reminder);
 
         title_edttext.setText(edit_title);
         des_edttxt.setText(edit_description);
+        date.setText(edit_date);
+        time.setText(edit_time);
+
+        final Calendar myCalendar = Calendar. getInstance () ;
+
+        set_reminder.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                selectDate();
+                /*final DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet (DatePicker view , int year , int monthOfYear , int dayOfMonth) {
+                        myCalendar .set(Calendar. YEAR , year) ;
+                        myCalendar .set(Calendar. MONTH , monthOfYear) ;
+                        myCalendar .set(Calendar. DAY_OF_MONTH , dayOfMonth) ;
+                        updateLabel() ;
+                    }
+                }; */
+            }
+
+            private void selectDate() {
+                DatePickerDialog datePickerDialog = new DatePickerDialog(EditOption.this,
+                        new DatePickerDialog.OnDateSetListener() {
+
+                            @Override
+                            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                                myCalendar .set(Calendar. YEAR , year) ;
+                                myCalendar .set(Calendar. MONTH , monthOfYear) ;
+                                myCalendar .set(Calendar. DAY_OF_MONTH , dayOfMonth) ;
+                                updateLabel();
+
+                                //date_time = dayOfMonth + "-" + (monthOfYear + 1) + "-" + year;
+                                //selectTime();
+                            }
+                        }, year, month, day);
+                datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis()-1000);
+                datePickerDialog.show();
+            }
+            private void updateLabel () {
+                String myFormat = "dd/MM/yy" ; //In which you need put here
+                SimpleDateFormat sdf = new SimpleDateFormat(myFormat , Locale. getDefault ()) ;
+                Date date = myCalendar.getTime();
+                set_reminder.setText(sdf.format(date));
+                scheduleNotification(getNotification(set_reminder.getText().toString()) ,date.getTime()) ;
+            }
+
+            private void selectTime(){
+                // Get Current Time
+                final Calendar c = Calendar.getInstance();
+                hour = c.get(Calendar.HOUR_OF_DAY);
+                min = c.get(Calendar.MINUTE);
+
+                TimePickerDialog timePickerDialog = new TimePickerDialog(EditOption.this,
+                        new TimePickerDialog.OnTimeSetListener() {
+
+                            @Override
+                            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+
+                                hour = hourOfDay;
+                                min = minute;
+                                time_date = hourOfDay+":"+minute;
+
+                                final_notify = date_time+" "+time_date;
+                                set_reminder.setText(final_notify);
+
+                            }
+
+                        }, hour, min, false);
+                timePickerDialog.show();
+            }
+        });
 
         date.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -133,6 +225,22 @@ public class EditOption extends AppCompatActivity {
                     save_changes.put("time", time.getText().toString());
                 save_changes.put("preference",edit_preference);
 
+                DocumentReference doc = firebaseFirestore.collection(userId).document("task").collection("imp").document(edit_title);
+                HashMap<String, Object> map = new HashMap<>();
+                map.put("title", edit_title);
+                map.put("description", des_edttxt.getText().toString());
+                if(d == null)
+                    map.put("date", null);
+                else
+                    map.put("date", date.getText().toString());
+                if(t == null)
+                    map.put("time", null);
+                else
+                    map.put("time", time.getText().toString());
+                map.put("preference",edit_preference);
+
+                doc.set(map);
+
                 documentReference.set(save_changes).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
@@ -148,39 +256,36 @@ public class EditOption extends AppCompatActivity {
                     }
                 });
 
-               /*documentReference.set(save_changes).addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Toast.makeText(EditOption.this, "Changes done!", Toast.LENGTH_SHORT).show();
-                        documentReference.get()
-                                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                                    @Override
-                                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                        if (documentSnapshot.contains("time")) {
-                                            Toast.makeText(EditOption.this, "CONTAINS TIME", Toast.LENGTH_LONG).show();
-                                            containsTime = true;
-                                        } else {
-                                            Toast.makeText(EditOption.this, "DOESNOT CONTAIN TIME", Toast.LENGTH_SHORT).show();
-                                        }
-
-                                        intent1.putExtra("flag_for_time",containsTime);
-                                        intent1.putExtra("document_name",edit_title);
-                                        startActivity(intent1);
-                                    }
-                                }).addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                Toast.makeText(EditOption.this, e.getMessage(), Toast.LENGTH_LONG).show();
-                            }
-                        });
-
-                    }
-                });*/
-
-
             }
         });
     }
 
+    private void scheduleNotification (Notification notification , long delay) {
+        Intent notificationIntent = new Intent( EditOption.this,ReminderBroadcast.class) ;
+        notificationIntent.putExtra(ReminderBroadcast.NOTIFICATION_ID , 1 ) ;
+        notificationIntent.putExtra(ReminderBroadcast. NOTIFICATION , notification) ;
+        PendingIntent pendingIntent = PendingIntent. getBroadcast ( this, 0 , notificationIntent , PendingIntent. FLAG_UPDATE_CURRENT ) ;
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context. ALARM_SERVICE ) ;
+        assert alarmManager != null;
+        alarmManager.set(AlarmManager. ELAPSED_REALTIME_WAKEUP ,delay , pendingIntent) ;
+    }
+
+    private Notification getNotification (String content) {
+        NotificationCompat.Builder builder = new NotificationCompat.Builder( this,default_notification_channel_id ) ;
+        builder.setContentTitle("Scheduled Notification") ;
+        builder.setContentText(content) ;
+        builder.setSmallIcon(R.drawable.ic_launcher_foreground) ;
+        builder.setAutoCancel(true) ;
+        builder.setChannelId(NOTIFICATION_CHANNEL_ID) ;
+        return builder.build() ;
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Intent intent = new Intent(EditOption.this,MainActivity.class);
+        finish();
+        startActivity(intent);
+    }
 }
 

@@ -24,10 +24,10 @@
 
         <ImageView
             android:id="@+id/pinned_note"
-            android:layout_width="45dp"
-            android:layout_height="27dp"
-            android:layout_marginTop="10dp"
+            android:layout_width="26dp"
+            android:layout_height="20dp"
             android:layout_marginLeft="150dp"
+            android:layout_marginTop="10dp"
             android:src="@drawable/pin"
             android:visibility="visible" />
 
