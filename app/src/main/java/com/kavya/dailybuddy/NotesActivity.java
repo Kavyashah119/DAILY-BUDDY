@@ -230,13 +230,17 @@ public class NotesActivity extends AppCompatActivity {
                 holder.noteDateTime.setText(model.getDatetime());
                 holder.noteText.setText(model.getText());
 
-                if(model.getPinned().equals("1")){
-                    Log.d("MODEL","Pinned");
-                    holder.notepinned.setVisibility(View.VISIBLE);
-                    holder.notepinned.setColorFilter(Color.argb(255,135,206,235));
-                }else{
-                    Log.d("MODEL","Not Pinned");
-                    holder.notepinned.setVisibility(View.GONE);
+                try{
+                    if(model.getPinned().equals("1")){
+                        Log.d("MODEL","Pinned");
+                        holder.notepinned.setVisibility(View.VISIBLE);
+                        holder.notepinned.setColorFilter(Color.argb(255,135,206,235));
+                    }else{
+                        Log.d("MODEL","Not Pinned");
+                        holder.notepinned.setVisibility(View.GONE);
+                    }
+                }catch(Exception e){
+                    e.getMessage();
                 }
 
                 holder.cardviewLayout.setOnClickListener(new View.OnClickListener() {
@@ -282,7 +286,6 @@ public class NotesActivity extends AppCompatActivity {
                 }else{
                     holder.noteURL.setVisibility(View.GONE);
                 }
-
             }
         };
         firestoreRecyclerAdapter.startListening();

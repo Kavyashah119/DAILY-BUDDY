@@ -281,7 +281,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                // holder.radioButton.setBackground(getResources().getDrawable(R.drawable.ic_baseline_radio_button));
                                 holder.radioButton.setBackgroundResource(R.drawable.ic_baseline_radio_button);
                              }
-                            else{
+                            else if(documentSnapshot.get("preference").equals("-1")){
                                 holder.toggleButton.setBackground(getResources().getDrawable(R.drawable.ic_baseline_star_border_24));
                                 holder.note_title.setPaintFlags(holder.note_title.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
                               //  holder.radioButton.setBackground(getResources().getDrawable(R.drawable.done));
