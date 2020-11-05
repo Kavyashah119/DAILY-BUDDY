@@ -22,7 +22,7 @@
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/coordinator_layout" >
+        android:id="@+id/coordinator_layout">
 
         <RelativeLayout
             android:id="@+id/relative_layout"
@@ -30,85 +30,85 @@
             android:layout_height="match_parent">
 
             <androidx.appcompat.widget.Toolbar
-             android:id="@+id/toolbar"
-             android:layout_width="match_parent"
-             android:layout_height="wrap_content"
-             app:title="My Tasks"
-             android:background="@color/colorPrimary"
-             app:titleTextColor="#fff"/>
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/colorPrimary"
+                app:title="My Tasks"
+                app:titleTextColor="#fff" />
 
-             <com.google.android.material.appbar.AppBarLayout
-             android:id="@+id/app_bar_layout"
-             android:layout_marginTop="50dp"
-             android:fitsSystemWindows="true"
-             android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-             android:layout_width="match_parent"
-             android:layout_height="wrap_content">
+            <com.google.android.material.appbar.AppBarLayout
+                android:id="@+id/app_bar_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="50dp"
+                android:fitsSystemWindows="true"
+                android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
-        <LinearLayout
-            android:id="@+id/layout_info"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/colorPrimary"
-            android:orientation="vertical"
-            android:padding="16dp">
-
-            <RelativeLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
-
-                <EditText
-                    android:id="@+id/edt_title"
+                <LinearLayout
+                    android:id="@+id/layout_info"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Title"
-                    android:textColor="@color/colorWhite"
-                    android:textColorHint="@android:color/white"
-                    android:textSize="30sp"
-                    android:maxLength="25"/>
+                    android:layout_height="match_parent"
+                    android:background="@color/colorPrimary"
+                    android:orientation="vertical"
+                    android:padding="16dp">
 
-                <ImageView
-                    android:id="@+id/title_mic"
-                    android:layout_width="wrap_content"
-                    android:layout_height="34dp"
-                    android:layout_alignParentEnd="true"
-                    android:layout_marginLeft="300dp"
-                    android:layout_marginTop="22dp"
-                    android:layout_marginEnd="14dp"
-                    android:src="@drawable/ic_baseline_mic_24" />
+                    <RelativeLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
 
-            </RelativeLayout>
+                        <EditText
+                            android:id="@+id/edt_title"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="Title"
+                            android:maxLength="25"
+                            android:textColor="@color/colorWhite"
+                            android:textColorHint="@android:color/white"
+                            android:textSize="30sp" />
 
-            <RelativeLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+                        <ImageView
+                            android:id="@+id/title_mic"
+                            android:layout_width="wrap_content"
+                            android:layout_height="34dp"
+                            android:layout_alignParentEnd="true"
+                            android:layout_marginLeft="300dp"
+                            android:layout_marginTop="22dp"
+                            android:layout_marginEnd="14dp"
+                            android:src="@drawable/ic_baseline_mic_24" />
 
-                <EditText
-                    android:id="@+id/edt_description"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Description"
-                    android:inputType="textMultiLine"
-                    android:textColor="@color/colorWhite"
-                    android:textColorHint="@android:color/white"
-                    android:textSize="20sp" />
+                    </RelativeLayout>
 
-                <ImageView
-                    android:id="@+id/des_mic"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:layout_marginLeft="300dp"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginEnd="12dp"
-                    android:src="@drawable/ic_baseline_mic_24" />
+                    <RelativeLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
 
-            </RelativeLayout>
+                        <EditText
+                            android:id="@+id/edt_description"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="Description"
+                            android:inputType="textMultiLine"
+                            android:textColor="@color/colorWhite"
+                            android:textColorHint="@android:color/white"
+                            android:textSize="20sp" />
 
-        </LinearLayout>
+                        <ImageView
+                            android:id="@+id/des_mic"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:layout_marginLeft="300dp"
+                            android:layout_marginTop="16dp"
+                            android:layout_marginEnd="12dp"
+                            android:src="@drawable/ic_baseline_mic_24" />
+
+                    </RelativeLayout>
+
+                </LinearLayout>
 
 
-    </com.google.android.material.appbar.AppBarLayout>
+            </com.google.android.material.appbar.AppBarLayout>
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/fab"
@@ -118,39 +118,63 @@
                 android:layout_marginTop="170dp"
                 android:layout_marginRight="9dp"
                 android:elevation="6dp"
+                android:fitsSystemWindows="true"
                 android:src="@drawable/ic_add"
                 app:fabSize="normal"
-                app:pressedTranslationZ="12dp"
-                android:fitsSystemWindows="true"/>
+                app:pressedTranslationZ="12dp" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/listTodo"
-                android:layout_marginTop="30dp"
-                android:layout_below="@id/app_bar_layout"
-                app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="30dp" />
+                android:layout_below="@id/app_bar_layout"
+                android:layout_marginTop="30dp"
+                android:layout_marginBottom="30dp"
+                app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior" />
+
+
+            <TextView
+                android:id="@+id/text_winning"
+                android:layout_width="match_parent"
+                android:layout_height="191dp"
+                android:layout_below="@+id/app_bar_layout"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentBottom="true"
+                android:layout_marginStart="0dp"
+                android:layout_marginTop="0dp"
+                android:layout_marginEnd="0dp"
+                android:layout_marginBottom="350dp"
+                android:background="@color/colorNoteColor5"
+                android:text="#winning"
+                android:textColor="@color/colorWhite"
+                android:textSize="30sp"
+                android:textAlignment="center"
+                android:padding="75dp"
+                android:visibility="gone"/>
 
             <ImageView
                 android:id="@+id/no_tasks_img"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_alignParentTop="true"
+                android:layout_marginTop="370dp"
+                android:src="@drawable/cartoon"
+                android:visibility="gone" />
+
+
+            <!--<Button
+                android:id="@+id/completed_btn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:visibility="gone"
-                android:src="@drawable/welcome"/>
+                android:text="Completed"
+                android:layout_below="@id/listTodo" />
 
-        <!--<Button
-            android:id="@+id/completed_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Completed"
-            android:layout_below="@id/listTodo" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/completed_tasks_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/completed_btn" /> -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/completed_tasks_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/completed_btn" /> -->
 
         </RelativeLayout>
 
