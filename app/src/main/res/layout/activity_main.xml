@@ -65,7 +65,7 @@
                     android:textColor="@color/colorWhite"
                     android:textColorHint="@android:color/white"
                     android:textSize="30sp"
-                    android:inputType="textMultiLine"/>
+                    android:maxLength="25"/>
 
                 <ImageView
                     android:id="@+id/title_mic"
