@@ -286,6 +286,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                 holder.note_title.setPaintFlags(holder.note_title.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
                               //  holder.radioButton.setBackground(getResources().getDrawable(R.drawable.done));
                                 holder.radioButton.setBackgroundResource(R.drawable.done);
+                                holder.toggleButton.setClickable(false);
                             }
 
                         }catch (Exception e){
@@ -358,6 +359,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                             count--;
                             initializeCountDrawer(count);
+
 //                            holder.radioButton.setBackground(getResources().getDrawable(R.drawable.ic_baseline_radio_button_checked));
                             }
                         else{
@@ -366,6 +368,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             preference="0";
                             model.preference="0";
                             firebaseFirestore.collection(userId).document("task").collection("tasks").document(model.getTitle().toLowerCase()).update("preference",model.getPreference());
+
                         }
                     }
                 });
@@ -413,6 +416,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
+                                if(model.getPreference().equals("1")){
+                                    count--;
+                                    initializeCountDrawer(count);
+                                }
                                 firebaseFirestore.collection(userId).document("task").collection("tasks").document(model.getTitle().toLowerCase()).delete();
                                 firebaseFirestore.collection(userId).document("task").collection("imp").document(model.getTitle().toLowerCase()).delete();
                                 showSnackBar();
