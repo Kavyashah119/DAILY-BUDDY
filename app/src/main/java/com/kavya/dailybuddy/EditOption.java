@@ -255,7 +255,6 @@ public class EditOption extends AppCompatActivity {
                         Toast.makeText(EditOption.this, e.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
-
             }
         });
     }

@@ -99,6 +99,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     TextView impTextView;
 
+    static int temp=0;
+    ImageView noTasks;
+    TextView textWinning;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)                                              /* On create method */
     {
@@ -115,8 +119,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         titleMic = findViewById(R.id.title_mic);
         desMic = findViewById(R.id.des_mic);
         relativeLayout = findViewById(R.id.relative_layout);
+        noTasks = findViewById(R.id.no_tasks_img);
+        textWinning = findViewById(R.id.text_winning);
 
         impTextView = (TextView) MenuItemCompat.getActionView(navigationView.getMenu().findItem(R.id.Important));
+        impTextView.setText("0");
+        impTextView.setGravity(Gravity.CENTER_VERTICAL);
+        impTextView.setTypeface(null, Typeface.BOLD);
+        impTextView.setTextColor(getResources().getColor(R.color.colorNoteColor5));
 
         final GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN) /* Configure Google SignIn */
                 .requestIdToken(getString(R.string.default_web_client_id))
@@ -228,6 +238,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             @Override
             protected void onBindViewHolder(@NonNull final notesViewHolder holder, int position, @NonNull final notes model) {
 
+                temp = adapter.getItemCount();
+                Log.d("DELETE", temp +"on bind");
                 holder.reminder.setVisibility(GONE);
                 holder.delete_button.setVisibility(GONE);
                 holder.edit_button.setVisibility(GONE);
@@ -287,6 +299,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                               //  holder.radioButton.setBackground(getResources().getDrawable(R.drawable.done));
                                 holder.radioButton.setBackgroundResource(R.drawable.done);
                                 holder.toggleButton.setClickable(false);
+
                             }
 
                         }catch (Exception e){
@@ -420,6 +433,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                     count--;
                                     initializeCountDrawer(count);
                                 }
+                                temp--;
+                                Log.d("DELETE", temp +"after deletion");
+
+                                if(temp==0)
+                                {
+                                    noTasks.setVisibility(View.VISIBLE);
+                                    textWinning.setVisibility(View.VISIBLE);
+                                }
+                                else
+                                {
+                                    noTasks.setVisibility(GONE);
+                                    textWinning.setVisibility(GONE);
+                                }
                                 firebaseFirestore.collection(userId).document("task").collection("tasks").document(model.getTitle().toLowerCase()).delete();
                                 firebaseFirestore.collection(userId).document("task").collection("imp").document(model.getTitle().toLowerCase()).delete();
                                 showSnackBar();
@@ -441,6 +467,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                 .setAction("UNDO", new View.OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
+                                        temp++;
+                                        Log.d("DELETE", temp +"after undo");
                                         firebaseFirestore.collection(userId).document("task").collection("tasks").document(model.getTitle().toLowerCase()).set(model);
                                         firebaseFirestore.collection(userId).document("task").collection("imp").document(model.getTitle().toLowerCase()).set(model);
                                     }
@@ -448,6 +476,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         snackbar.show();
                     }
                 });
+
+                if(temp == 0)
+                {
+                    noTasks.setVisibility(View.VISIBLE);
+                    textWinning.setVisibility(View.VISIBLE);
+                }else{
+                    noTasks.setVisibility(View.GONE);
+                    textWinning.setVisibility(View.GONE);
+                }
 
                 final HashMap<String,Object> imp_map = new HashMap<>();
 
@@ -470,8 +507,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                             imp_map.put("preference",preference);
                             imp.update(imp_map);
-
-
                         }
                         else{
                             Log.d("TOGGLE","Is Not Checked");
@@ -489,6 +524,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             }
         };
+        if(temp==0)
+        {
+            noTasks.setVisibility(View.VISIBLE);
+            textWinning.setVisibility(View.VISIBLE);
+        }
+        else
+        {
+            noTasks.setVisibility(GONE);
+            textWinning.setVisibility(GONE);
+        }
+
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
     }

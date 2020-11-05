@@ -230,7 +230,7 @@ public class CreateNoteActivity extends AppCompatActivity {
 
                 try {
                     if(!(title_from_intent.equals(null)))
-                        firebaseFirestore.collection(userId).document("note").collection("notes").document(title_from_intent).delete();
+                        firebaseFirestore.collection(userId).document("note").collection("notes").document(title_from_intent);
                 }
                 catch (Exception e)
                 {
